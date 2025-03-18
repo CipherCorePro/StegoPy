@@ -1,17 +1,31 @@
 # config.yaml
-# Konfigurationsdatei für das Wasserzeichen-Schema.
-# Enthält die Basisinformationen für das Master-Wasserzeichen sowie das Mapping für
-# Variablennamen und Code-Struktur.
+# Konfigurationsdatei für das erweiterte Wasserzeichen-System.
+# Neben den bisherigen Parametern gibt es hier auch die Wahl des Fehlerkorrektur-Algorithmus,
+# Einstellungen für das Plugin-System und Key Vault Parameter (sofern benötigt).
 
 projektname: "MySecretProject"
 copyright:
   jahr: 2023
 uuid: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
 
+# Schlüssel für Verschlüsselung (falls nicht über das Key Vault bezogen)
+encryption_key_embedder: "defaultkey123456"
+encryption_key_detector: ""
+
+# Fehlerkorrektur-Methode: "hamming" oder "reed-solomon"
+error_correction: "reed-solomon"
+
+# Option: Bits zufällig zuordnen?
+random_bit_assignment: true
+
+# Alternativer Namensmodus: Bei Bit '1' wird zufällig zwischen camelCase und PascalCase gewählt
+alternate_naming: true
+
+# Mapping für Namenskonventionen (zur Dokumentation; wird intern nicht dynamisch genutzt)
 mapping:
   variable_namen:
-    "0": "snake_case"    # Bit 0: snake_case
-    "1": "camelCase"     # Bit 1: camelCase
+    "0": "snake_case"
+    "1": "camelCase"
   code_struktur:
-    "0": "for_loop"            # Bit 0: for-Schleife
-    "1": "list_comprehension"  # Bit 1: List Comprehension
+    "0": "for_loop"
+    "1": "list_comprehension"

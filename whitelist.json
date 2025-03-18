@@ -20,6 +20,8 @@
       "type": "for_loop",
       "line_number": 3,
       "code_context": "For-Schleife zur Iteration",
+      "start_line": 5,
+      "end_line": 7,
       "has_side_effects": false,
       "reason_for_inclusion": "Schleife ohne Seiteneffekte"
     }
