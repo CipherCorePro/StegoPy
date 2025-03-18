@@ -1,0 +1,17 @@
+# config.yaml
+# Konfigurationsdatei für das Wasserzeichen-Schema.
+# Enthält die Basisinformationen für das Master-Wasserzeichen sowie das Mapping für
+# Variablennamen und Code-Struktur.
+
+projektname: "MySecretProject"
+copyright:
+  jahr: 2023
+uuid: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+
+mapping:
+  variable_namen:
+    "0": "snake_case"    # Bit 0: snake_case
+    "1": "camelCase"     # Bit 1: camelCase
+  code_struktur:
+    "0": "for_loop"            # Bit 0: for-Schleife
+    "1": "list_comprehension"  # Bit 1: List Comprehension

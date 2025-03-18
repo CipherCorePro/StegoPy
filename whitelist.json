@@ -1,0 +1,27 @@
+{
+  "variables": [
+    {
+      "name": "example_function",
+      "line_number": 1,
+      "code_context": "Definierte Funktion",
+      "is_global": true,
+      "reason_for_inclusion": "Kernfunktion, für die Wasserzeichen-Steganographie zulässig"
+    },
+    {
+      "name": "example_var",
+      "line_number": 2,
+      "code_context": "Variable innerhalb der Funktion",
+      "is_global": false,
+      "reason_for_inclusion": "Lokale Variable, unkritisch"
+    }
+  ],
+  "code_sections": [
+    {
+      "type": "for_loop",
+      "line_number": 3,
+      "code_context": "For-Schleife zur Iteration",
+      "has_side_effects": false,
+      "reason_for_inclusion": "Schleife ohne Seiteneffekte"
+    }
+  ]
+}
