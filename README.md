@@ -1,4 +1,3 @@
-```markdown
 # Wasserzeichen-Einbettung in Python-Code
 
 Dieses Projekt stellt einen Proof-of-Concept dar, um „unsichtbare“ Wasserzeichen in Python-Code mittels AST-Manipulation einzubetten. Ziel ist es, den Schutz geistigen Eigentums in Open-Source-Projekten zu erhöhen, indem versteckte Informationen (wie Projektname, Copyright-Jahr und UUID) 
