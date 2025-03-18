@@ -16,6 +16,8 @@ Jahr und UUID) im Quellcode verteilt werden. Die Wasserzeicheninformation wird a
   - [Wasserzeichen nachweisen](#wasserzeichen-nachweisen)
 - [Testing](#testing)
 - [Erweiterungsmöglichkeiten](#erweiterungsmöglichkeiten)
+- [FAQ](#faq)
+- [Glossar](#glossar)
 - [Lizenz](#lizenz)
 - [Kontakt](#kontakt)
 
@@ -23,11 +25,11 @@ Jahr und UUID) im Quellcode verteilt werden. Die Wasserzeicheninformation wird a
 
 ## Voraussetzungen
 
-- **Python Version:** 3.12 oder höher
+- **Python Version:** 3.12 oder höher  
 - **Benötigte Python-Pakete:**
   - [PyYAML](https://pypi.org/project/PyYAML/) (zum Laden der YAML-Konfigurationsdatei)
   - [astor](https://pypi.org/project/astor/) (zur Rückkonvertierung des modifizierten AST in Quellcode)
-  - (Optional für erweiterte Transformationen) [PyCryptodome](https://pypi.org/project/pycryptodome/)
+  - (Optional, für erweiterte Transformationen) [PyCryptodome](https://pypi.org/project/pycryptodome/)
 
 Stelle sicher, dass diese Pakete in Deiner Umgebung installiert sind.
 
@@ -49,7 +51,7 @@ Stelle sicher, dass diese Pakete in Deiner Umgebung installiert sind.
    pip install PyYAML astor
    ```
    
-   Für Verschlüsselungsfunktionen (optional):
+   Für optionale Verschlüsselungsfunktionen:
    
    ```bash
    pip install pycryptodome
@@ -87,10 +89,10 @@ Stelle sicher, dass diese Pakete in Deiner Umgebung installiert sind.
 - **watermark_embedder.py:**  
   Das Hauptmodul, das den Wasserzeicheneinbettungsprozess mittels AST-Manipulation implementiert. Diese Version umfasst auch:
   - Einen interaktiven Review-Modus, der die vorgenommenen Änderungen anzeigt und eine Bestätigung einholt.
-  - Platzhalter für Fehlerkorrektur (z. B. Hamming-Code) und Verschlüsselung.
+  - Erweiterte Transformationen mit integrierter Fehlerkorrektur (Hamming-Code) und AES-Verschlüsselung (sofern konfiguriert).
 
 - **watermark_detector.py:**  
-  Ein Modul zur Überprüfung eines Python-Quellcodes auf das eingebettete Wasserzeichen. Es extrahiert mithilfe von AST die Wasserzeichen-Bits und berechnet Robustheitsmetriken, um den Nachweis zu erbringen.
+  Ein Modul zur Überprüfung eines Python-Quellcodes auf das eingebettete Wasserzeichen. Es extrahiert mithilfe von AST die Wasserzeichen-Bits, berechnet Robustheitsmetriken und entschlüsselt das Wasserzeichen (falls verschlüsselt).
 
 - **generate_whitelist.py:**  
   Ein Skript zur automatischen Generierung einer dynamischen Whitelist anhand des AST und kontextabhängiger Kriterien. Die generierte Whitelist wird im JSON-Format ausgegeben.
@@ -99,7 +101,7 @@ Stelle sicher, dass diese Pakete in Deiner Umgebung installiert sind.
   Ein Skript, das den transformierten Code zusätzlichen Transformationen (z. B. Minifizierung) unterzieht und anschließend den Wasserzeichennachweis ausführt, um die Robustheit des eingebetteten Wasserzeichens zu überprüfen.
 
 - **test_watermark.py:**  
-  Enthält Unit-Tests zur Überprüfung der Funktionalität des Wasserzeicheneinbetters.
+  Enthält Unit-Tests zur Überprüfung der Funktionalität des Wasserzeicheneinbettungsprozesses.
 
 ---
 
@@ -118,6 +120,9 @@ Diese Datei enthält alle grundlegenden Einstellungen für das Wasserzeichen:
 
 - **uuid:**  
   Eine eindeutige UUID, die den Codezweig identifiziert.
+
+- **encryption_key:**  
+  (Optional) Ein Schlüssel zur Verschlüsselung des Wasserzeichens.
 
 - **mapping:**  
   Definiert, wie Bits (0 oder 1) in Änderungen übersetzt werden:
@@ -155,11 +160,10 @@ Diese Datei enthält Listen von Variablen und Code-Abschnitten, die für die Ein
 
    Dabei werden folgende Schritte durchgeführt:
    - Laden der Konfiguration und Whitelist.
-   - Generierung des Master-Wasserzeichens als Binärstring.
+   - Generierung des Master-Wasserzeichens als Binärstring (mit Hamming-Code und optionaler AES-Verschlüsselung).
    - Analyse des AST von `file_to_transform.py`.
    - Transformation ausgewählter Variablen-/Funktionsnamen und Code-Strukturen basierend auf den Wasserzeichenbits.
-   - (Im Review-Modus) Anzeige der vorgenommenen Änderungen zur interaktiven Bestätigung.
-   - Speicherung des transformierten Codes in `file_transformed.py`.
+   - **Im Review-Modus** werden alle vorgenommenen Änderungen interaktiv angezeigt – eine Bestätigung ist erforderlich, bevor der transformierte Code in `file_transformed.py` gespeichert wird.
 
 4. **Ergebnis überprüfen:**  
    Öffne `file_transformed.py` und verifiziere, dass die Funktionalität erhalten bleibt und das Wasserzeichen eingebettet wurde.
@@ -174,9 +178,9 @@ python watermark_detector.py file_transformed.py
 
 Das Skript:
 - Lädt die Konfiguration und Whitelist.
-- Generiert das erwartete Wasserzeichen.
+- Generiert das erwartete Wasserzeichen (und entschlüsselt es bei Bedarf).
 - Parst den Zielcode und extrahiert die eingebetteten Wasserzeichen-Bits.
-- Vergleicht das extrahierte Bitmuster mit dem erwarteten und gibt einen Nachweis bzw. Robustheitsmetriken aus.
+- Vergleicht das extrahierte Bitmuster mit dem erwarteten und gibt einen Nachweis sowie Robustheitsmetriken aus.
 
 ---
 
@@ -187,7 +191,6 @@ Führe die Unit-Tests aus, um die Funktionalität des Wasserzeicheneinbettungspr
 ```bash
 python test_watermark.py
 ```
-![image](https://github.com/user-attachments/assets/38aa533d-9004-47b4-9568-efa37341f5fa)
 
 Die Tests überprüfen:
 - Die korrekte Generierung des Master-Wasserzeichens.
@@ -196,24 +199,47 @@ Die Tests überprüfen:
 
 ---
 
-## Erweiterungsmöglichkeiten
+## FAQ
 
-Dieses Projekt bietet folgende Erweiterungsmöglichkeiten, die schrittweise integriert werden können:
+**Q1: Was ist ein Wasserzeichen in diesem Kontext?**  
+A1: Ein Wasserzeichen ist eine versteckte, binäre Information, die in den Quellcode eingebettet wird, um Urheberschaft und den Schutz geistigen Eigentums nachweisen zu können.
 
-- **Dynamische Whitelists:**  
-  Ein Skript (`generate_whitelist.py`) generiert automatisch eine Whitelist basierend auf dem AST und kontextabhängigen Kriterien.
+**Q2: Wie wird das Wasserzeichen eingebettet?**  
+A2: Das Wasserzeichen wird aus Konfigurationsdaten (Projektname, Jahr, UUID) als Binärstring generiert. Anschließend wird es mithilfe von AST-Manipulation in ausgewählte Code-Elemente (z. B. Variablennamen, Funktionen, Schleifen) eingebettet – dabei kommen auch Fehlerkorrektur (Hamming-Code) und Verschlüsselung (AES) zum Einsatz.
 
-- **Robustheitstests:**  
-  Ein Skript (`robustness_tests.py`) unterzieht den transformierten Code weiteren Transformationen (z. B. Minifizierung) und führt anschließend den Wasserzeichennachweis aus, um die Robustheit zu evaluieren.
+**Q3: Was ist der Review-Modus?**  
+A3: Im Review-Modus zeigt das Programm alle vorgenommenen Änderungen (z. B. Umbenennungen) an und fragt interaktiv nach einer Bestätigung, bevor der transformierte Code gespeichert wird.
 
-- **Erweiterte Transformationen:**  
-  Zusätzliche Code-Transformationen (z. B. Integration von Fehlerkorrekturcodes oder Verschlüsselung des Wasserzeichens) können implementiert werden – Platzhalterfunktionen sind bereits vorhanden.
+**Q4: Wie kann ich überprüfen, ob mein Wasserzeichen erhalten geblieben ist?**  
+A4: Mit dem Modul `watermark_detector.py` lässt sich der transformierte Code parsen, die eingebetteten Bits extrahieren und mit dem erwarteten Wasserzeichen vergleichen. Zusätzlich werden Robustheitsmetriken berechnet.
+
+**Q5: Was passiert, wenn der Wasserzeichennachweis nur teilweise erfolgreich ist?**  
+A5: Falls nur ein Teil des Wasserzeichens erkannt wird, wird der Prozentsatz der Übereinstimmung ausgegeben, sodass sich die Robustheit des eingebetteten Wasserzeichens bewerten lässt.
+
+---
+
+## Glossar
+
+- **AST (Abstract Syntax Tree):**  
+  Eine baumartige Darstellung des Quellcodes, die die syntaktische Struktur eines Programms beschreibt. Wird verwendet, um Code zu analysieren und zu transformieren.
+
+- **Wasserzeichen:**  
+  Eine versteckte Information, die in den Quellcode eingebettet wird, um Urheberrechte nachweisen zu können.
+
+- **Hamming-Code:**  
+  Ein Fehlerkorrekturcode, der durch Hinzufügen von Paritätsbits die Erkennung und Korrektur von Fehlern im Bitstrom ermöglicht.
+
+- **AES-Verschlüsselung:**  
+  Ein weit verbreiteter symmetrischer Verschlüsselungsalgorithmus, der hier genutzt wird, um das Wasserzeichen zu schützen.
 
 - **Review-Modus:**  
-  Der interaktive Modus in `watermark_embedder.py` zeigt alle vorgenommenen Änderungen an und fragt vor dem endgültigen Speichern nach einer Bestätigung durch den Benutzer.
+  Ein interaktiver Modus, in dem die vorgenommenen Änderungen am Code angezeigt werden und eine Bestätigung durch den Benutzer erforderlich ist, bevor der transformierte Code gespeichert wird.
 
-- **Erweiterter Wasserzeichennachweis:**  
-  `watermark_detector.py` wurde erweitert, um nicht nur das Bitmuster zu extrahieren, sondern auch Robustheitsmetriken (z. B. prozentuale Übereinstimmung) zu berechnen und auszugeben.
+- **Whitelist:**  
+  Eine Liste von Variablen und Code-Abschnitten, die für die Wasserzeichen-Einbettung zugelassen sind.
+
+- **Minifizierung:**  
+  Ein Prozess, bei dem der Code durch Entfernen von überflüssigen Zeichen (z. B. Leerzeilen) verkleinert wird, ohne seine Funktionalität zu verändern.
 
 ---
 
@@ -226,5 +252,4 @@ Dieses Projekt ist als Proof-of-Concept konzipiert. Für den produktiven Einsatz
 ## Kontakt
 
 Bei Fragen oder Anregungen zur Weiterentwicklung dieses Projekts kannst Du Dich gerne an uns wenden.
-
 
