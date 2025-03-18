@@ -245,7 +245,7 @@ A5: Falls nur ein Teil des Wasserzeichens erkannt wird, wird der Prozentsatz der
 
 ## Lizenz
 
-Dieses Projekt ist als Proof-of-Concept konzipiert. Für den produktiven Einsatz oder die kommerzielle Nutzung sollten weitere rechtliche und technische Aspekte berücksichtigt werden. Bitte beachte, dass das Projekt unter [Lizenzname, z. B. MIT Lizenz] steht, sofern nicht anders angegeben.
+Dieses Projekt ist als Proof-of-Concept konzipiert. Für den produktiven Einsatz oder die kommerzielle Nutzung sollten weitere rechtliche und technische Aspekte berücksichtigt werden. Bitte beachte, dass das Projekt unter GNU General Public License v3.0 steht, sofern nicht anders angegeben.
 
 ---
 
