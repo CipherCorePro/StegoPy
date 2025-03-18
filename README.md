@@ -149,6 +149,7 @@ Um sicherzustellen, dass der Wasserzeicheneinbettungsprozess korrekt funktionier
 ```bash
 python test_watermark.py
 ```
+![image](https://github.com/user-attachments/assets/712887b0-2ba3-4371-b4e9-0a2f3b7c6595)
 
 Die Tests überprüfen:
 - Die korrekte Generierung des Master-Wasserzeichens.
